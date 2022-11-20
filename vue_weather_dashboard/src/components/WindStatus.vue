@@ -1,7 +1,7 @@
 <template>
     <div id="windStatus">
       <p>Wiatr: - {{ windSpeed}}</p>
-      <p>Kierunek — {{ windDirection }}</p>
+      <p>Kierunek — {{ windDirectionDegrees }} stopni - {{windDirectionDir}}. 0 stopni = N</p>
     </div>
   </template>
   
@@ -12,7 +12,8 @@
     data () {
       return {
         windSpeed: this.highlights.windStatus.windSpeed,
-        windDirection: this.highlights.windStatus.windDirection
+        windDirectionDegrees: this.highlights.windStatus.windDirectionDegrees,
+        windDirectionDir: this.highlights.windStatus.windDirectionDir
       }
     },
     methods: {
