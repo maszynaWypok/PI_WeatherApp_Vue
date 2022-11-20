@@ -1,5 +1,5 @@
 <template>
-    <div id="uvindex">
+    <div id="uvIndex">
       <p>Index UV: {{ uvindex }}</p>
     </div>
   </template>

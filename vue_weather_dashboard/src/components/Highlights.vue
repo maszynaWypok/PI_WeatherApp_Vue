@@ -1,7 +1,6 @@
 <template>
     <div id="highlights">
       <p>Najważniejsze informacje oo ogodzie:</p>
-      {{ highlights }}
       <uv-index :highlights="highlights"></uv-index>
       <visibility :highlights="highlights"></visibility>
       <wind-status :highlights="highlights"></wind-status>  

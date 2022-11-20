@@ -1,7 +1,7 @@
 <template>
-    <div id="windstatus">
-      <p>Wiatr:</p>
-      <p>Prędkość — {{ speed }}; Kierunek — {{ direction }}</p>
+    <div id="windStatus">
+      <p>Wiatr: - {{ windSpeed}}</p>
+      <p>Kierunek — {{ windDirection }}</p>
     </div>
   </template>
   
@@ -11,8 +11,8 @@
     props: ["highlights"],
     data () {
       return {
-        speed: this.highlights.windstatus.speed,
-        direction: this.highlights.windstatus.direction
+        windSpeed: this.highlights.windStatus.windSpeed,
+        windDirection: this.highlights.windStatus.windDirection
       }
     },
     methods: {
