@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <p> Kod kompnentów jest w {{filename}}</p>
     <dashboard-content :highlights="highlights" :tempVar="tempVar"></dashboard-content>
     <div id="search">
       <input id="location-input" type="text" ref="input" placeholder="Twoja lokacja?" @keyup.enter="organizeAllDetails">
@@ -118,6 +117,35 @@ export default {
     }
   },
   methods: {
+
+    //action-methods
+    makeInputEmpty: function() {
+      this.$refs.input.value = '';
+    },
+    makeTempVarTodayEmpty: function() {
+      this.tempVar.tempToday = [];
+    },
+    detectEnterKeyPress: function() {
+      var input = this.$refs.input;
+      input.addEventListener('keyup', function(event) {
+        event.preventDefault();
+        var enterKeyCode = 13;
+        if (event.keyCode === enterKeyCode) {
+          this.setHitEnterKeyTrue();
+        }
+      });
+    },
+    locationEntered: function() {
+      var input = this.$refs.input;
+      if (input.value === '') {
+        this.location = "Katowice";
+      } else {
+        this.location = this.convertToTitleCase(input.value);
+      }
+      this.makeInputEmpty();
+      this.makeTempVarTodayEmpty();
+    },
+
 
 
   },
