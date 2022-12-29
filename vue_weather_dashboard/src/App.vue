@@ -89,6 +89,7 @@ export default {
   },
   data () {
     return {
+      
       weatherDetails: false,
       location: '',
       lat: '',
@@ -114,12 +115,6 @@ export default {
       filename: 'App.vue',
       tempVar: {
         tempToday: [
-          {hour: '11.00 AM', temp: '35'},
-          {hour: '12.00 AM', temp: '36'},
-          {hour: '1.00 AM', temp: '37'},
-          {hour: '2.00 AM', temp: '38'},
-          {hour: '3.00 AM', temp: '36'},
-          {hour: '4.00 AM', temp: '35'},
           //bedzie dynamiczne
         ],
       },
@@ -142,6 +137,26 @@ export default {
        str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
      }
      return str.join(' ');
+   },
+   unixToHuman: function(timezone, timestamp) {
+     var moment = require('moment-timezone'); // for handling date & time
+     var decipher = new Date((timestamp) * 1000);
+     var human = moment(decipher)
+       //.tz('America')
+       //.utcOffset(timezone)
+       .format('llll');
+     var timeArray = human.split(' ');
+     var timeNumeral = timeArray[4];
+     var timeSuffix = timeArray[5];
+     var justTime = timeNumeral + ' ' + timeSuffix;
+     var monthDateArray = human.split(',');
+     var monthDate = monthDateArray[1].trim();
+    
+     return {
+       fullTime: human,
+       onlyTime: justTime,
+       onlyMonthDate: monthDate
+     };
    },
     //action-methods
     makeInputEmpty: function() {
@@ -173,13 +188,13 @@ export default {
 
     //api call
     fixWeatherApi: function() {
-      var weatherApi = 'https://api.openweathermap.org/data/2.5/weather?q=' + this.location + '&appid=' + process.env.VUE_APP_OPEN_WEATHER_API_KEY + '&units=metric';
+      var weatherApi = 'https://api.openweathermap.org/data/2.5/weather?q=' + this.location + '&appid=2ba26978d7e6ca228d0f6ce8e3d0b68b'+ '&units=metric';
       this.completeWeatherApi = weatherApi;
     },
     fetchWeatherData: async function() {
       await this.fixWeatherApi();
       var axios = require('axios');
-      var weatherApiResponse = await axios.get(this.completeWeatherApi);
+      var weatherApiResponse = await axios.default.get(this.completeWeatherApi);
       if (weatherApiResponse.status === 200) {
         this.rawWeatherData = weatherApiResponse.data;
       } else {
@@ -191,16 +206,16 @@ export default {
      return this.rawWeatherData.timezone;
    },
    getSetCurrentTime: function() {
-     var currentTime = this.rawWeatherData.currently.time;
+     var currentTime = this.rawWeatherData.dt;
      var timezone = this.getTimezone();
-     this.currentWeather.time = this.unixToHuman( //unix to human still to write
+     this.currentWeather.time = this.unixToHuman( 
        timezone,
        currentTime
      ).fullTime;
    },
    getSetSummary: function() {
     var currentSummary = this.convertToTitleCase(
-      this.rawWeatherData.currently.summary
+      this.rawWeatherData.weather.description
     );
     if (currentSummary.includes(' And')) {
       currentSummary = currentSummary.replace (' And', ',');
@@ -215,22 +230,22 @@ export default {
      this.currentWeather.possibility = possible;
    },
    getSetCurrentTemp: function() {
-     currentWeather.temp = this.rawWeatherData.currently.temperature;
+     this.currentWeather.temp = this.rawWeatherData.main.temp;
      
    },
    getTodayDetails: function() {
-     return this.rawWeatherData.daily.data[0];
+     return this.rawWeatherData.main[0];
    },
    getSetTodayTempHighLowWithTime: function() {
      var timezone = this.getTimezone();
      var todayDetails = this.getTodayDetails();
-     this.currentWeather.todayHighLow.todayTempHigh = todayDetails.temperatureMax;
+     this.currentWeather.todayHighLow.todayTempHigh = todayDetails.temp_max;
      
      this.currentWeather.todayHighLow.todayTempHighTime = this.unixToHuman(
        timezone,
        todayDetails.temperatureMaxTime
      ).onlyTime;
-     this.currentWeather.todayHighLow.todayTempLow = todayDetails.temperatureMin;
+     this.currentWeather.todayHighLow.todayTempLow = todayDetails.temp_min;
      this.currentWeather.todayHighLow.todayTempLowTime = this.unixToHuman(
        timezone,
        todayDetails.temperatureMinTime
@@ -240,7 +255,7 @@ export default {
      return this.rawWeatherData.hourly.data;
    },
    getSetHourlyTempInfoToday: function() {
-     var unixTime = this.rawWeatherData.currently.time;
+     var unixTime = this.rawWeatherData.currently.dt;
      var timezone = this.getTimezone();
      var todayMonthDate = this.unixToHuman(timezone, unixTime).onlyMonthDate;
      var hourlyData = this.getHourlyInfoToday();
@@ -303,15 +318,37 @@ export default {
      );
    },
 
-
-
-
+   //info section
+   organizeCurrentWeatherInfo: function() {
+    this.getSetCurrentTime();
+    this.getSetCurrentTemp();
+    this.getSetTodayTempHighLowWithTime();
+    this.getSetSummary();
+    this.getSetPossibility();
+   },
+   organizeTodayHighlights: function() {
+     // top level for highlights
+     this.getSetUVIndex();
+     this.getSetVisibility();
+     this.getSetWindStatus();
+   },
+   organizeAllDetails: async function() {
+    await this.fetchWeatherData();
+    this.organizeCurrentWeatherInfo();
+    this.organizeTodayHighlights();
+    this.getSetHourlyTempInfoToday();    
+   },
+  },
+  mounted: 
+  async function() {
+    this.location = "Katowice";
+    await this.organizeAllDetails();
   },
   computed: {
 
 
   }
-}
+};
 </script>
 
 <style>
