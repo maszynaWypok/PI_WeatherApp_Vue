@@ -11,7 +11,6 @@ Charts(FusionCharts);
 PowerCharts(FusionCharts);
 Widgets(FusionCharts);
 FusionTheme(FusionCharts);
-//globalna rejestracja komponentów
 Vue.use(VueFusionCharts, FusionCharts);
 
 new Vue({
