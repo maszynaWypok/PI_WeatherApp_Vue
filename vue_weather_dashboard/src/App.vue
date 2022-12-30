@@ -144,7 +144,7 @@ export default {
      var moment = require('moment-timezone'); // for handling date & time
      var decipher = new Date((timestamp) * 1000);
      var human = moment(decipher)
-       //.tz('America')
+       .tz(timezone)
        //.utcOffset(timezone)
        .format('llll');
      var timeArray = human.split(' ');
@@ -214,7 +214,7 @@ export default {
       var axios = require('axios');
       var weatherApiResponse = await axios.default.get(this.completeWeatherApi);
       if (weatherApiResponse.status === 200) {
-        this.rawWeatherData = weatherApiResponse;
+        this.rawWeatherData = weatherApiResponse.data;
       } else {
         alert("Houston, we don't have a forecast for you yet");
       }
@@ -224,7 +224,7 @@ export default {
      return this.rawWeatherData.timezone;
    },
    getSetCurrentTime: function() {
-     var currentTime = this.rawWeatherData.dt;
+     var currentTime = this.rawWeatherData.current.dt;
      var timezone = this.getTimezone();
      this.currentWeather.time = this.unixToHuman( 
        timezone,
