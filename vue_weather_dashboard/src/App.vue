@@ -94,7 +94,9 @@ export default {
       location: '',
       lat: '',
       long: '',
+      completeGeoApi: '',
       completeWeatherApi: '',
+      rawGeoData: '',
       rawWeatherData: '',
       currentWeather: {
         full_location: '',
@@ -185,10 +187,26 @@ export default {
       this.makeInputEmpty();
       this.makeTempVarTodayEmpty();
     },
-
+    fixGeoApi: function() {
+      var geoApi = 'http://api.openweathermap.org/geo/1.0/direct?q='+ this.location +'&limit=1&appid=2ba26978d7e6ca228d0f6ce8e3d0b68b';
+      this.completeGeoApi = geoApi;
+    },
+    fetchCoordinates: async function() {
+      await this.fixGeoApi();
+      var axios = require('axios');
+      var geoApiResponse = await axios.default.get(this.completeGeoApi);
+      if (geoApiResponse.status === 200) {
+        this.rawGeoData = geoApiResponse.data[0];
+        this.lat = this.rawGeoData.lat;
+        this.long = this.rawGeoData.lon;
+      } else {
+        alert("Problem with geolocation occured");
+      }
+    },
     //api call
-    fixWeatherApi: function() {
-      var weatherApi = 'https://api.openweathermap.org/data/2.5/weather?q=' + this.location + '&appid=2ba26978d7e6ca228d0f6ce8e3d0b68b'+ '&units=metric';
+    fixWeatherApi: async function() {
+      await this.fetchCoordinates();
+      var weatherApi = 'https://api.openweathermap.org/data/3.0/onecall?lat=' + this.lat + '&lon=' + this.long +'&appid=2ba26978d7e6ca228d0f6ce8e3d0b68b'+ '&units=metric';
       this.completeWeatherApi = weatherApi;
     },
     fetchWeatherData: async function() {
@@ -196,7 +214,7 @@ export default {
       var axios = require('axios');
       var weatherApiResponse = await axios.default.get(this.completeWeatherApi);
       if (weatherApiResponse.status === 200) {
-        this.rawWeatherData = weatherApiResponse.data;
+        this.rawWeatherData = weatherApiResponse;
       } else {
         alert("Houston, we don't have a forecast for you yet");
       }
@@ -333,12 +351,14 @@ export default {
      this.getSetWindStatus();
    },
    organizeAllDetails: async function() {
+    await this.fetchCoordinates();
     await this.fetchWeatherData();
     this.organizeCurrentWeatherInfo();
     this.organizeTodayHighlights();
     this.getSetHourlyTempInfoToday();    
    },
   },
+
   mounted: 
   async function() {
     this.location = "Katowice";
