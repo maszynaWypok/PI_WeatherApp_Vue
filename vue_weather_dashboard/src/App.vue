@@ -199,9 +199,39 @@ export default {
         this.rawGeoData = geoApiResponse.data[0];
         this.lat = this.rawGeoData.lat;
         this.long = this.rawGeoData.lon;
+        this.currentWeather.full_location = this.rawGeoData.name +', ' + this.rawGeoData.state + ', ' + this.rawGeoData.country;
+        this.beautyfiCoords();
       } else {
         alert("Problem with geolocation occured");
       }
+    },
+    beautyfiCoords: function() {
+      var latit = this.lat;
+      var longtit = this.long;
+      if (latit > 0) {
+       this.currentWeather.formatted_lat =
+         (Math.round(latit * 10000) / 10000).toString() + '°N';
+     } else if (latit < 0) {
+       this.currentWeather.formatted_lat =
+         (-1 * (Math.round(latit * 10000) / 10000)).toString() +
+         '°S';
+     } else {
+       this.currentWeather.formatted_lat = (
+         Math.round(latit * 10000) / 10000
+       ).toString();
+     }
+     if (longtit > 0) {
+       this.currentWeather.formatted_long =
+         (Math.round(longtit * 10000) / 10000).toString() + '°E';
+     } else if (longtit < 0) {
+       this.currentWeather.formatted_long =
+         (-1 * (Math.round(longtit * 10000) / 10000)).toString() +
+         '°W';
+     } else {
+       this.currentWeather.formatted_long = (
+         Math.round(longtit * 10000) / 10000
+       ).toString();
+     }
     },
     //api call
     fixWeatherApi: async function() {
@@ -230,50 +260,57 @@ export default {
        timezone,
        currentTime
      ).fullTime;
-   },
+   }, /*
    getSetSummary: function() {
     var currentSummary = this.convertToTitleCase(
-      this.rawWeatherData.weather.description
+      this.rawWeatherData.current.weather.description
     );
+    if (currentSummary.includes(' And')) {
+      currentSummary = currentSummary.replace (' And', ',');
+    }
+    this.currentWeather.summary = currentSummary;
+   }, */
+   getSetSummary: function() {
+    var currentSummary = this.rawWeatherData.current.weather.description;
     if (currentSummary.includes(' And')) {
       currentSummary = currentSummary.replace (' And', ',');
     }
     this.currentWeather.summary = currentSummary;
    },
    getSetPossibility: function() {
-     var possible = this.formatPossibility(this.rawWeatherData.daily.icon);
+     var possible = this.formatPossibility(this.rawWeatherData.daily.weather.icon);
      if (possible.includes(' And')) {
        possible = possible.replace(' And', ',');
      }
      this.currentWeather.possibility = possible;
    },
    getSetCurrentTemp: function() {
-     this.currentWeather.temp = this.rawWeatherData.main.temp;
+     this.currentWeather.temp = this.rawWeatherData.current.temp;
      
    },
    getTodayDetails: function() {
-     return this.rawWeatherData.main[0];
+     return this.rawWeatherData.daily[0];
    },
-   getSetTodayTempHighLowWithTime: function() {
-     var timezone = this.getTimezone();
+   getSetTodayTempHighLowWithTime: function() { //still time to add?
+     //var timezone = this.getTimezone();
      var todayDetails = this.getTodayDetails();
-     this.currentWeather.todayHighLow.todayTempHigh = todayDetails.temp_max;
+     this.currentWeather.todayHighLow.todayTempHigh = todayDetails.temp.max;
      
-     this.currentWeather.todayHighLow.todayTempHighTime = this.unixToHuman(
+    /* this.currentWeather.todayHighLow.todayTempHighTime = this.unixToHuman(
        timezone,
        todayDetails.temperatureMaxTime
-     ).onlyTime;
-     this.currentWeather.todayHighLow.todayTempLow = todayDetails.temp_min;
-     this.currentWeather.todayHighLow.todayTempLowTime = this.unixToHuman(
+     ).onlyTime; */
+     this.currentWeather.todayHighLow.todayTempLow = todayDetails.temp.min;
+    /* this.currentWeather.todayHighLow.todayTempLowTime = this.unixToHuman(
        timezone,
        todayDetails.temperatureMinTime
-     ).onlyTime;
+     ).onlyTime; */
    },
    getHourlyInfoToday: function() {
      return this.rawWeatherData.hourly.data;
    },
    getSetHourlyTempInfoToday: function() {
-     var unixTime = this.rawWeatherData.currently.dt;
+     var unixTime = this.rawWeatherData.current.dt;
      var timezone = this.getTimezone();
      var todayMonthDate = this.unixToHuman(timezone, unixTime).onlyMonthDate;
      var hourlyData = this.getHourlyInfoToday();
@@ -284,7 +321,7 @@ export default {
        if (todayMonthDate === hourlyMonthDate) {
          var hourlyObject = { hour: '', temp: '' };
          hourlyObject.hour = hourlyOnlyTime;
-         hourlyObject.temp = this.fahToCel(hourlyData[i].temperature).toString();
+         hourlyObject.temp = this.hourlyData[i].temperature.toString();
          this.tempVar.tempToday.push(hourlyObject);
          /*
          Since we are using array.push(), we are just adding elements
@@ -321,15 +358,15 @@ export default {
      }
    },
    getSetUVIndex: function() {
-     var uvIndex = this.rawWeatherData.currently.uvIndex;
+     var uvIndex = this.rawWeatherData.current.uvi;
      this.highlights.uvIndex = uvIndex;
    },
    getSetVisibility: function() {
-     this.highlights.visibility = this.rawWeatherData.currently.visibility;
+     this.highlights.visibility = this.rawWeatherData.current.visibility;
    },
    getSetWindStatus: function() {
-     this.highlights.windStatus.windSpeed = this.rawWeatherData.currently.windSpeed;
-     var absoluteWindDir = this.rawWeatherData.currently.windBearing;
+     this.highlights.windStatus.windSpeed = this.rawWeatherData.current.wind_speed;
+     var absoluteWindDir = this.rawWeatherData.current.wind_deg;
      this.highlights.windStatus.windDirection = absoluteWindDir;
      this.highlights.windStatus.derivedWindDirection = this.deriveWindDir(
        absoluteWindDir
