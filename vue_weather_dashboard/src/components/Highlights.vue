@@ -1,6 +1,6 @@
 <template>
     <div id="highlights">
-      <p>Najważniejsze informacje oo ogodzie:</p>
+      <p>Najważniejsze informacje o pogodzie:</p>
       <uv-index :highlights="highlights"></uv-index>
       <visibility :highlights="highlights"></visibility>
       <wind-status :highlights="highlights"></wind-status>  

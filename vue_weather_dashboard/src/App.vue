@@ -402,11 +402,10 @@ deriveWindDir: function(windDir) {
      this.highlights.windStatus.windSpeed = this.rawWeatherData.current.wind_speed;
      var absoluteWindDir = this.rawWeatherData.current.wind_deg;
      this.highlights.windStatus.windDirectionDegrees = absoluteWindDir;
-     this.highlights.windStatus.derivedWindDirection = this.deriveWindDir(
+     this.highlights.windStatus.windDirectionDir = this.deriveWindDir(
        absoluteWindDir
      );
    },
-
    //info section
    organizeCurrentWeatherInfo: function() {
     this.getSetCurrentTime();
