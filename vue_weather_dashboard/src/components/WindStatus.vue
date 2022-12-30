@@ -1,7 +1,7 @@
 <template>
     <div id="windStatus">
-      <p>Wiatr: - {{ windSpeed}}</p>
-      <p>Kierunek — {{ windDirectionDegrees }} stopni - {{windDirectionDir}}. 0 stopni = N</p>
+      <p>Wiatr: {{ windSpeed}} m/s</p>
+      <p>Kierunek: {{ windDirectionDegrees }} stopni - {{windDirectionDir}}</p>
     </div>
   </template>
   
