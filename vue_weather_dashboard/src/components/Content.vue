@@ -13,7 +13,7 @@ export default {
     props: ['highlights', 'tempVar'],
     components: {
         'temp-var-chart': TempVarChart,
-        'today-highlights': Highlights,
+        'today-highlights': Highlights
     },
 }
 </script>
