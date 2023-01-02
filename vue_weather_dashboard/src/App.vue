@@ -225,14 +225,14 @@ deriveWindDir: function(windDir) {
       } else {
         this.location = this.convertToTitleCase(input.value);
       }
-      this.makeInputEmpty();
       this.makeTempVarTodayEmpty();
     },
     fixGeoApi: function() {
+      this.locationEntered();
       var geoApi = 'http://api.openweathermap.org/geo/1.0/direct?q='+ this.location +'&limit=1&appid=2ba26978d7e6ca228d0f6ce8e3d0b68b';
       this.completeGeoApi = geoApi;
     },
-    fetchCoordinates: async function() {
+    fetchCoordinates:async function() {
       await this.fixGeoApi();
       var axios = require('axios');
       var geoApiResponse = await axios.default.get(this.completeGeoApi);
@@ -289,6 +289,7 @@ deriveWindDir: function(windDir) {
       } else {
         alert("Houston, we don't have a forecast for you yet");
       }
+      this.makeInputEmpty();
     },
     //methods for data processing
     getTimezone: function() {
@@ -431,7 +432,7 @@ deriveWindDir: function(windDir) {
 
   mounted: 
   async function() {
-    this.location = "Katowice";
+    //this.location = "Katowice";
     await this.organizeAllDetails();
   },
   computed: {
