@@ -45,14 +45,15 @@
         }
     },
     watch: {
-    highlights: {
-      handler: function() {
-        this.highlights.uvIndex;
-      },
-      deep: true
+        highlights: {
+            handler: function(value) {
+                console.log(value)
+            }
+        },
+    deep: true,
+    immediate: true
     }
   }
-   }
    </script>
    <style>
     #gauge > div > table {

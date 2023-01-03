@@ -17,6 +17,9 @@
           </div>
           <div id="info">
             <div class="wrapper-left">
+              <div id="current-icon">
+                <img :src="currentWeather.fullPossibility">
+              </div>
               <div id="current-weather">
                 {{ currentWeather.temp }}
                 <span>°C</span>
@@ -112,6 +115,7 @@ export default {
         },
       summary: '',
       possibility: '',
+      fullPossibility: '',
       },
 
       filename: 'App.vue',
@@ -303,21 +307,19 @@ deriveWindDir: function(windDir) {
        currentTime
      ).fullTime;
    }, 
-   /* getSetSummary: function() {
+   getSetSummary: function() {
     var currentSummary = this.convertToTitleCase(
-      this.rawWeatherData.current.weather.description
+      this.rawWeatherData.current.weather[0].description
     );
     if (currentSummary.includes(' And')) {
       currentSummary = currentSummary.replace (' And', ',');
     }
     this.currentWeather.summary = currentSummary;
-   }, */
+   },
    getSetPossibility: function() {
-     var possible = this.convertToTitleCase(this.rawWeatherData.daily[0].weather.icon);
-     if (possible.includes(' And')) {
-       possible = possible.replace(' And', ',');
-     }
-     this.currentWeather.possibility = possible;
+     this.currentWeather.possibility = this.rawWeatherData.current.weather[0].icon;
+     var poss = 'http://openweathermap.org/img/wn/'+ this.rawWeatherData.current.weather[0].icon +'@2x.png';
+    this.currentWeather.fullPossibility = poss;
    },
    getSetCurrentTemp: function() {
      this.currentWeather.temp = this.rawWeatherData.current.temp;
@@ -412,8 +414,8 @@ deriveWindDir: function(windDir) {
     this.getSetCurrentTime();
     this.getSetCurrentTemp();
     this.getSetTodayTempHighLowWithTime();
-    //this.getSetSummary();
-    //this.getSetPossibility();
+    this.getSetSummary();
+    this.getSetPossibility();
    },
    organizeTodayHighlights: function() {
      // top level for highlights
