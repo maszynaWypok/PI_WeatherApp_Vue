@@ -136,7 +136,6 @@ export default {
     }
   },
   methods: {
-    //just utility stuff
     convertToTitleCase: function(str) {
      str = str.toLowerCase().split(' ');
      for (var i = 0; i < str.length; i++) {
@@ -144,16 +143,7 @@ export default {
      }
      return str.join(' ');
    },
-   // To format the “possibility” (of weather) string obtained from the weather API
-formatPossibility: function(str) {
-     str = str.toLowerCase().split('-');
-     for (var i = 0; i < str.length; i++) {
-       str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
-     }
-     return str.join(' ');
-   },
-   // To format the wind direction based on the angle
-deriveWindDir: function(windDir) {
+    deriveWindDir: function(windDir) {
      var wind_directions_array = [
        { minVal: 0, maxVal: 30, direction: 'N' },
        { minVal: 31, maxVal: 45, direction: 'NNE' },
@@ -183,9 +173,7 @@ deriveWindDir: function(windDir) {
      }
      return wind_direction;
    },
-
-
-   unixToHuman: function(timezone, timestamp) {
+    unixToHuman: function(timezone, timestamp) {
      var moment = require('moment-timezone'); // for handling date & time
      var decipher = new Date((timestamp) * 1000);
      var human = moment(decipher)
@@ -296,7 +284,7 @@ deriveWindDir: function(windDir) {
       this.makeInputEmpty();
     },
     //methods for data processing
-    getTimezone: function() {
+   getTimezone: function() {
      return this.rawWeatherData.timezone;
    },
    getSetCurrentTime: function() {
@@ -318,7 +306,7 @@ deriveWindDir: function(windDir) {
    },
    getSetPossibility: function() {
      this.currentWeather.possibility = this.rawWeatherData.current.weather[0].icon;
-     var poss = 'http://openweathermap.org/img/wn/'+ this.rawWeatherData.current.weather[0].icon +'@2x.png';
+     var poss = 'http://openweathermap.org/img/wn/'+ this.rawWeatherData.current.weather[0].icon +'@4x.png';
     this.currentWeather.fullPossibility = poss;
    },
    getSetCurrentTemp: function() {
@@ -344,22 +332,30 @@ deriveWindDir: function(windDir) {
      ).onlyTime; */
    },
    getHourlyInfoToday: function() {
-    return this.rawWeatherData.hourly.data;
+    return this.rawWeatherData.hourly[0];
    },
    getSetHourlyTempInfoToday: function() {
      var unixTime = this.rawWeatherData.current.dt;
      var timezone = this.getTimezone();
      var todayMonthDate = this.unixToHuman(timezone, unixTime).onlyMonthDate;
-     var hourlyData = this.getHourlyInfoToday();
-     for (var i = 0; i < hourlyData.length; i++) {
-       var hourlyTimeAllTypes = this.unixToHuman(timezone, hourlyData[i].time);
-       var hourlyOnlyTime = hourlyTimeAllTypes.onlyTime;
-       var hourlyMonthDate = hourlyTimeAllTypes.onlyMonthDate;
-       if (todayMonthDate === hourlyMonthDate) {
+     //var hourlyData = this.getHourlyInfoToday();
+     for (var i = 0; i < 24; i++) {
+      var hourlyTimeAllTypes = this.unixToHuman(timezone, this.rawWeatherData.hourly[i].dt);
+      var hourlyOnlyTime = hourlyTimeAllTypes.onlyTime;
+      var hourlyMonthDate = hourlyTimeAllTypes.onlyMonthDate;
+      //below shows just the same day
+      if (todayMonthDate === hourlyMonthDate) {
          var hourlyObject = { hour: '', temp: '' };
          hourlyObject.hour = hourlyOnlyTime;
-         hourlyObject.temp = this.hourlyData[i].temperature.toString();
+         hourlyObject.temp = this.rawWeatherData.hourly[i].temp.toString();
          this.tempVar.tempToday.push(hourlyObject);
+     }
+     //below shows all 24 hours
+         /* var hourlyObject = { hour: '', temp: '' };
+         hourlyObject.hour = hourlyOnlyTime;
+         hourlyObject.temp = this.rawWeatherData.hourly[i].temp.toString();
+         this.tempVar.tempToday.push(hourlyObject); */
+         
          /*
          Since we are using array.push(), we are just adding elements
          at the end of the array. Thus, the array is not getting emptied
@@ -368,14 +364,14 @@ deriveWindDir: function(windDir) {
          has been created, and called from this.locationEntered().
          */
        }
-     }
-     /*
+     },
+/*      /*
      To cover the edge case where the local time is between 10 — 12 PM,
      and therefore there are only two elements in the array
      this.tempVar.tempToday. We need to add the points for minimum temperature
      and maximum temperature so that the chart gets generated with atleast four points.
      */
-     if (this.tempVar.tempToday.length <= 2) {
+     /* if (this.tempVar.tempToday.length <= 2) {
        var minTempObject = {
          hour: this.currentWeather.todayHighLow.todayTempHighTime,
          temp: this.currentWeather.todayHighLow.todayTempHigh
@@ -383,7 +379,7 @@ deriveWindDir: function(windDir) {
        var maxTempObject = {
          hour: this.currentWeather.todayHighLow.todayTempLowTime,
          temp: this.currentWeather.todayHighLow.todayTempLow
-       };
+       }; */
        /*
        Typically, lowest temp are at dawn,
        highest temp is around mid day.
@@ -391,9 +387,7 @@ deriveWindDir: function(windDir) {
        */
        // array.unshift() adds stuff at the beginning of the array.
        // the order will be: min, max, 10 PM, 11 PM.
-       this.tempVar.tempToday.unshift(maxTempObject, minTempObject);
-     }
-   },
+/*        this.tempVar.tempToday.unshift(maxTempObject, minTempObject); */ 
    getSetUVIndex: function() {
      var uvIndex = this.rawWeatherData.current.uvi;
      this.highlights.uvIndex = uvIndex;
@@ -418,7 +412,6 @@ deriveWindDir: function(windDir) {
     this.getSetPossibility();
    },
    organizeTodayHighlights: function() {
-     // top level for highlights
      this.getSetUVIndex();
      this.getSetVisibility();
      this.getSetWindStatus();
@@ -428,7 +421,7 @@ deriveWindDir: function(windDir) {
     await this.fetchWeatherData();
     this.organizeCurrentWeatherInfo();
     this.organizeTodayHighlights();
-    //this.getSetHourlyTempInfoToday();    
+    this.getSetHourlyTempInfoToday();    
    },
   },
 
