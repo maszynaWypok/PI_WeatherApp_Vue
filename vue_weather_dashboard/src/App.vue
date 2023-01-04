@@ -32,7 +32,6 @@
                     {{ currentWeather.todayHighLow.todayTempHigh }}
                     <span>°C</span>
                   </div>
-                  <div id="max-summary">at {{ currentWeather.todayHighLow.todayTempHighTime }}</div>
                 </div>
                 <div class="min-desc">
                   <div id="min-detail">
@@ -40,7 +39,6 @@
                     {{ currentWeather.todayHighLow.todayTempLow }}
                     <span>°C</span>
                   </div>
-                  <div id="min-summary">at {{ currentWeather.todayHighLow.todayTempLowTime }}</div>
                 </div>
               </div>
             </div>
@@ -338,31 +336,23 @@ export default {
      var unixTime = this.rawWeatherData.current.dt;
      var timezone = this.getTimezone();
      var todayMonthDate = this.unixToHuman(timezone, unixTime).onlyMonthDate;
-     //var hourlyData = this.getHourlyInfoToday();
-     for (var i = 0; i < 24; i++) {
+     
+     for (var i = 0; i < 12; i++) {
       var hourlyTimeAllTypes = this.unixToHuman(timezone, this.rawWeatherData.hourly[i].dt);
       var hourlyOnlyTime = hourlyTimeAllTypes.onlyTime;
       var hourlyMonthDate = hourlyTimeAllTypes.onlyMonthDate;
       //below shows just the same day
-      if (todayMonthDate === hourlyMonthDate) {
+      /* if (todayMonthDate === hourlyMonthDate) {
          var hourlyObject = { hour: '', temp: '' };
          hourlyObject.hour = hourlyOnlyTime;
          hourlyObject.temp = this.rawWeatherData.hourly[i].temp.toString();
          this.tempVar.tempToday.push(hourlyObject);
-     }
-     //below shows all 24 hours
-         /* var hourlyObject = { hour: '', temp: '' };
+     } */
+     //below shows all 12 hours
+         var hourlyObject = { hour: '', temp: '' };
          hourlyObject.hour = hourlyOnlyTime;
          hourlyObject.temp = this.rawWeatherData.hourly[i].temp.toString();
-         this.tempVar.tempToday.push(hourlyObject); */
-         
-         /*
-         Since we are using array.push(), we are just adding elements
-         at the end of the array. Thus, the array is not getting emptied
-         first when a new location is entered.
-         to solve this problem, a method this.makeTempVarTodayEmpty()
-         has been created, and called from this.locationEntered().
-         */
+         this.tempVar.tempToday.push(hourlyObject);
        }
      },
 /*      /*
