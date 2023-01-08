@@ -252,31 +252,31 @@ hr {
 
 @media only screen and (min-width: 768px) {
    #sidebar {
-       height: 100vh;
+      height: 100vh;
    }
 
    #info {
-       position: fixed;
-       bottom: 50px;
-       width: 100%;
-       padding-left: 15px;
+      position: fixed;
+      bottom: 50px;
+      width: 100%;
+      padding-left: 15px;
    }
 
    .wrapper-right {
-       margin-top: 80px;
+      margin-top: 80px;
    }
 }
 
 @media only screen and (min-width:1440px) {
    #sidebar {
-       width: 350px;
-       max-width: 350px;
-       flex: auto;
+      width: 350px;
+      max-width: 350px;
+      flex: auto;
    }
 
    #dashboard-content {
-       width: calc(100% — 350px);
-       max-width: calc(100% — 350px);
-       flex: auto;
+      width: calc(100% — 350px);
+      max-width: calc(100% — 350px);
+      flex: auto;
    }
 }
