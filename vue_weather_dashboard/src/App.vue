@@ -90,7 +90,6 @@ export default {
   },
   data () {
     return {
-      
       weatherDetails: false,
       location: '',
       lat: '',
@@ -118,9 +117,7 @@ export default {
 
       filename: 'App.vue',
       tempVar: {
-        tempToday: [
-          //bedzie dynamiczne
-        ],
+        tempToday: [],
       },
       highlights: {
         uvIndex: '',
@@ -191,7 +188,6 @@ export default {
        onlyMonthDate: monthDate
      };
    },
-    //action-methods
     makeInputEmpty: function() {
       this.$refs.input.value = '';
     },
@@ -264,7 +260,6 @@ export default {
        ).toString();
      }
     },
-    //api call
     fixWeatherApi: async function() {
       await this.fetchCoordinates();
       var weatherApi = 'https://api.openweathermap.org/data/3.0/onecall?lat=' + this.lat + '&lon=' + this.long +'&appid=2ba26978d7e6ca228d0f6ce8e3d0b68b'+ '&units=metric';
@@ -281,7 +276,6 @@ export default {
       }
       this.makeInputEmpty();
     },
-    //methods for data processing
    getTimezone: function() {
      return this.rawWeatherData.timezone;
    },
@@ -314,7 +308,7 @@ export default {
    getTodayDetails: function() {
      return this.rawWeatherData.daily[0];
    },
-   getSetTodayTempHighLowWithTime: function() { //still time to add?
+   getSetTodayTempHighLowWithTime: function() {
      //var timezone = this.getTimezone();
      var todayDetails = this.getTodayDetails();
      this.currentWeather.todayHighLow.todayTempHigh = todayDetails.temp.max;
@@ -341,43 +335,12 @@ export default {
       var hourlyTimeAllTypes = this.unixToHuman(timezone, this.rawWeatherData.hourly[i].dt);
       var hourlyOnlyTime = hourlyTimeAllTypes.onlyTime;
       var hourlyMonthDate = hourlyTimeAllTypes.onlyMonthDate;
-      //below shows just the same day
-      /* if (todayMonthDate === hourlyMonthDate) {
-         var hourlyObject = { hour: '', temp: '' };
-         hourlyObject.hour = hourlyOnlyTime;
-         hourlyObject.temp = this.rawWeatherData.hourly[i].temp.toString();
-         this.tempVar.tempToday.push(hourlyObject);
-     } */
-     //below shows all 12 hours
-         var hourlyObject = { hour: '', temp: '' };
-         hourlyObject.hour = hourlyOnlyTime;
-         hourlyObject.temp = this.rawWeatherData.hourly[i].temp.toString();
-         this.tempVar.tempToday.push(hourlyObject);
+      var hourlyObject = { hour: '', temp: '' };
+      hourlyObject.hour = hourlyOnlyTime;
+      hourlyObject.temp = this.rawWeatherData.hourly[i].temp.toString();
+      this.tempVar.tempToday.push(hourlyObject);
        }
      },
-/*      /*
-     To cover the edge case where the local time is between 10 — 12 PM,
-     and therefore there are only two elements in the array
-     this.tempVar.tempToday. We need to add the points for minimum temperature
-     and maximum temperature so that the chart gets generated with atleast four points.
-     */
-     /* if (this.tempVar.tempToday.length <= 2) {
-       var minTempObject = {
-         hour: this.currentWeather.todayHighLow.todayTempHighTime,
-         temp: this.currentWeather.todayHighLow.todayTempHigh
-       };
-       var maxTempObject = {
-         hour: this.currentWeather.todayHighLow.todayTempLowTime,
-         temp: this.currentWeather.todayHighLow.todayTempLow
-       }; */
-       /*
-       Typically, lowest temp are at dawn,
-       highest temp is around mid day.
-       Thus we can safely arrange like min, max, temp after 10 PM.
-       */
-       // array.unshift() adds stuff at the beginning of the array.
-       // the order will be: min, max, 10 PM, 11 PM.
-/*        this.tempVar.tempToday.unshift(maxTempObject, minTempObject); */ 
    getSetUVIndex: function() {
      var uvIndex = this.rawWeatherData.current.uvi;
      this.highlights.uvIndex = uvIndex;
@@ -393,7 +356,6 @@ export default {
        absoluteWindDir
      );
    },
-   //info section
    organizeCurrentWeatherInfo: function() {
     this.getSetCurrentTime();
     this.getSetCurrentTemp();
@@ -417,7 +379,6 @@ export default {
 
   mounted: 
   async function() {
-    //this.location = "Katowice";
     await this.organizeAllDetails();
   },
   computed: {
@@ -426,7 +387,3 @@ export default {
   }
 };
 </script>
-
-<style>
-
-</style>
